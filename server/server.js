@@ -1,5 +1,7 @@
 const express = require("express");
-
+const path = require("path");
+const cateNewsRouter = require("./routes/cateNews");
+const newsRouter = require("./routes/news.js");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const app = express();
@@ -15,6 +17,21 @@ app.use(function(req, res, next) {
     );
     return next();
   });
+
+  // connect to mongoDB
+let urlData = process.env.DATABASE_URL;
+const connectMongoDB = async () => {
+  try {
+    await mongoose.connect(urlData, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true
+    });
+    console.log("connect successfuly to mongoDB!");
+  } catch (error) {
+    console.error("connect MongoDB has error: " + error);
+  }
+};
+connectMongoDB();
 
 app.get('/', function(req, res){
     res.send("Hello World");
