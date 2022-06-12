@@ -2,6 +2,8 @@ const express = require("express");
 const path = require("path");
 const cateNewsRouter = require("./routes/cateNews");
 const newsRouter = require("./routes/news.js");
+const loginRouter = require("./routes/login");
+const usersRouter = require("./routes/users");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const app = express();
@@ -32,6 +34,11 @@ const connectMongoDB = async () => {
   }
 };
 connectMongoDB();
+
+app.use("/users", usersRouter);
+app.use("/cateNews", cateNewsRouter);
+app.use("/news", newsRouter);
+app.use("/login", loginRouter);
 
 app.get('/', function(req, res){
     res.send("Hello World");
