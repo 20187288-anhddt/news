@@ -2,12 +2,37 @@ var express = require("express");
 const CateNewsModel = require("../models/CateNews");
 const NewsModel = require("../models/News");
 var router = express.Router();
+const auth = require("../middleware/auth");
+const authAdmin = require("../middleware/checkAdmin");
+const authCus = require("../middleware/checkCus");
 
 router.get("/", async function(req, res, next) {
     try {
       const cateNews = await CateNewsModel.find({ isDelete: false }).populate(
         "createdBy"
       );
+      return res.json({
+        code: 200,
+        err: null,
+        data: cateNews
+      });
+    } catch (err) {
+      console.log(err);
+      return res.json({
+        code: 400,
+        err: err.messege,
+        data: null
+      });
+    }
+  });
+  
+  router.get("/:_idCate", auth, async function(req, res, next) {
+    try {
+      const _idCate = req.params._idCate;
+      const cateNews = await CateNewsModel.find({
+        _id: _idCate,
+        isDelete: false
+      }).populate("createdBy");
       return res.json({
         code: 200,
         err: null,

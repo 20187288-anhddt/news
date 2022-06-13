@@ -1,6 +1,8 @@
 const express = require("express");
 const NewsModel = require("../models/News");
 const router = express.Router();
+const auth = require("../middleware/auth");
+const moment = require("moment")
 
 const app = express();
 
@@ -86,6 +88,27 @@ router.get("/categories/:id", async function (req, res, next) {
 	}
 });
 
+// get latestnews
+router.get("/latestNews", async function (req, res, next) {
+	try {
+		const News = await NewsModel.find({ status: 'published', isDelete: false})
+		.limit(10).sort({ dateCreate: -1 })
+			.populate("createdBy");
+
+		return res.json({
+			code: 200,
+			err: null,
+			data: News
+		});
+	} catch (err) {
+		return res.json({
+			code: 400,
+			err: err.messege,
+			data: null
+		});
+	}
+});
+
 // add news
 router.post("/", async function (req, res, next) {
 	try {
@@ -125,5 +148,74 @@ router.post("/", async function (req, res, next) {
 		});
 	}
 });
+
+router.get("/:id", async function (req, res, next) {
+	try {
+		const id = req.params.id;
+		const news = await NewsModel.find({ createdBy: { _id: id }, isDelete: false })
+			.populate("cateNews")
+			.populate("createdBy");
+		return res.json({
+			code: 200,
+			err: null,
+			data: news
+		});
+	} catch (err) {
+		return res.json({
+			code: 400,
+			err: err.messege,
+			data: null
+		});
+	}
+});
+
+router.get("/new/:id", async function (req, res, next) {
+	try {
+		const id = req.params.id;
+		const News = await NewsModel.find({ _id: id })
+			.populate("cateNews")
+			.populate("createdBy");
+		return res.json({
+			code: 200,
+			err: null,
+			data: News
+		});
+	} catch (err) {
+		return res.json({
+			code: 400,
+			err: err.messege,
+			data: null
+		});
+	}
+});
+
+router.delete("/:_id", async function (req, res, next) {
+	try {
+		const _id = req.params._id;
+		const newExist = await NewsModel.findOne({ _id: _id });
+
+		if (newExist) {
+			const newDelete = await NewsModel.findOneAndDelete({ _id: _id });
+			const news = await NewsModel.find({ isDelete: true })
+				.populate("createdBy");
+
+			if (newDelete) {
+				res.json({
+					code: 200,
+					message: "Xóa thành công",
+					data: news
+				});
+			}
+		}
+	} catch (err) {
+		return res.json({
+			code: 400,
+			message: "Xóa thất bại",
+			err: err,
+			data: null
+		});
+	}
+});
+
 
 module.exports = router;
