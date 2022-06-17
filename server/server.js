@@ -1,3 +1,4 @@
+const createError = require("http-errors");
 const express = require("express");
 const path = require("path");
 const cateNewsRouter = require("./routes/cateNews");
@@ -9,6 +10,14 @@ const dotenv = require("dotenv");
 const app = express();
 
 
+dotenv.config();
+// view engine setup
+app.use(express.json());
+app.use(
+  express.urlencoded({
+    extended: false
+  })
+);
 app.use(function(req, res, next) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     res.setHeader("Access-Control-Allow-Credentials", "true");
@@ -35,6 +44,7 @@ const connectMongoDB = async () => {
 };
 connectMongoDB();
 
+
 app.use("/users", usersRouter);
 app.use("/cateNews", cateNewsRouter);
 app.use("/news", newsRouter);
@@ -43,6 +53,14 @@ app.use("/login", loginRouter);
 app.get('/', function(req, res){
     res.send("Hello World");
 })
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
+}
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Server started at port: ${port}`));

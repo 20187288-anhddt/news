@@ -1,10 +1,12 @@
 const express = require("express");
+const fileUpload = require("express-fileupload");
 const NewsModel = require("../models/News");
 const router = express.Router();
 const auth = require("../middleware/auth");
 const moment = require("moment")
 
 const app = express();
+app.use(fileUpload());
 
 function sortNewsListByDateFirst(newsList){
 	newsList.sort((newsOne, newsTwo) => {
@@ -217,5 +219,72 @@ router.delete("/:_id", async function (req, res, next) {
 	}
 });
 
+// get news Reel
+router.get("/newsReels", async function (req, res, next) {
+	try {
+		let newsList = await NewsModel.find({ status: 'published', cateNews: "5dbe935fd84e1413ac50c2bc", isDelete: false}).limit(100).sort({dateCreate: -1, view: -1})
+			.populate("createdBy");
+		newsList = sortNewsListByDateFirst(newsList).slice(0, 20)
+		return res.json({
+			code: 200,
+			err: null,
+			data: newsList
+		});
+	} catch (err) {
+		return res.json({
+			code: 400,
+			err: err.messege,
+			data: null
+		});
+	}
+});
 
+// news ( isDelete = false )
+router.get("/", async function (req, res, next) {
+	try {
+		const News = await NewsModel.find({ isDelete: false })
+			.populate("cateNews")
+			.populate("createdBy");
+		return res.json({
+			code: 200,
+			err: null,
+			data: News
+		});
+	} catch (err) {
+		return res.json({
+			code: 400,
+			err: err.messege,
+			data: null
+		});
+	}
+});
+// get news detail
+router.get("/details/:_idNews", async function (req, res, next) {
+	try {
+		const idNews = req.params._idNews;
+		const News = await NewsModel.find({
+			_id: idNews,
+			isDelete: false
+		})
+			.populate("createdBy");
+
+		if (News.length > 0 && News[0].status === "unpublished")
+			return res.json({
+				code: 200,
+				err: null,
+				data: [null]
+			});
+		return res.json({
+			code: 200,
+			err: null,
+			data: News
+		});
+	} catch (err) {
+		return res.json({
+			code: 400,
+			err: err.messege,
+			data: null
+		});
+	}
+});
 module.exports = router;

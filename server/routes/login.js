@@ -52,7 +52,13 @@ router.post("/register", async function(req, res) {
           data: null
         });
       }
-  
+      if (user.isDelete === true) {
+        return res.json({
+          code: 401,
+          message: "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin!",
+          data: null
+        });
+      }
       const result = await bcrypt.compare(req.body.password, user.password);
   
       if (result) {
@@ -228,5 +234,31 @@ router.put("/updatePassword/:id", async (req, res) => {
   }
 });
 
+router.post("/checkToken", (req, res) => {
+  const token = req.body.token;
+  const role = req.body.role;
+  const tokenAuth = key.tokenKey;
+
+  jwt.verify(tokenAuth, token, function(err, decoded) {
+    if (err) {
+      res.json({
+        role: role,
+        message: "Error"
+      });
+    }
+
+    if (decoded && role === "admin") {
+      res.json({
+        role: role
+      });
+    }
+
+    if (decoded && role === "customer") {
+      res.json({
+        role: role
+      });
+    }
+  });
+});
 
   module.exports = router;
