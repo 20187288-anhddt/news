@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500&display=swap');
+
 .App {
   text-align: center;
 }
@@ -35,4 +37,34 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+.other-new__image, .search-new__image, .channel__image, .latest-new__image, .featured-new__image {
+  margin-right: 1rem;
+}
+
+.other-new:first-of-type .other-new__info, .featured-new:first-of-type .featured-new__info {
+  margin-top: 1rem;
+}
+
+.other-new:first-of-type .other-new__image, .featured-new:first-of-type .featured-new__image {
+  margin-right: 0;
+}
+
+.other-new:not(:last-child), .search-new:not(:last-child), .channel:not(:last-child), .latest-new:not(:last-child), .featured-new:not(:last-child) {
+  margin-bottom: 1rem;
+}
+
+.other-new__createby, .featured-new__createby {
+  margin-bottom: 0;
+}
+
+.other-new:first-of-type .other-new__image > img, .other-new:first-of-type .other-new__image, .featured-new:first-of-type .featured-new__image > img, .featured-new:first-of-type .featured-new__image {
+  width: 100%;
+}
+.text-red{
+  color: #c8102e;
+}
+.text-color{
+  color: #333 !important;
 }
