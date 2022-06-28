@@ -1,7 +1,8 @@
 module.exports = {
-    ROLE: {
-      ADMIN: "admin",
-      CUSTOMER: "customer",
-    }
-  };
-  
+  ROLE: {
+    ADMIN: "admin",
+    CUSTOMER: "customer",
+    EDITOR: "editor",
+    JOURNALIST: "journalist"
+  }
+};

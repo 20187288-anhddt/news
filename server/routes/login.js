@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const fileUpload = require("express-fileupload");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -9,79 +10,87 @@ const key = {
   tokenKey: "djghhhhuuwiwuewieuwieuriwu_cus"
 };
 
+const app = express();
+app.use(fileUpload());
 
 router.post("/register", async function(req, res) {
-    try {
-      const userExist = await UserModel.findOne({ email: req.body.email });
-  
-      if (!userExist) {
-        const User = new UserModel();
-  
-        User.username = req.body.userName;
-        User.password = password;
-        // User.image = file.name;
-        User.email = req.body.email;
-  
-        const userCreate = await User.save();
-  
-        return res.json({
-          code: 200,
-          message: "Bạn đã đăng ký thành công",
-          data: { userCreate }
-        });
-      } else {
-        return res.json({
-          code: 200,
-          message: "Người dùng đã tồn tại",
-          data: null
-        });
-      }
-    } catch (err) {
-      return res.json({ code: 400, message: err.message, data: null });
-    }
-  });
+  try {
+    const userExist = await UserModel.findOne({ email: req.body.email });
 
-  router.post("/", async function(req, res, next) {
-    try {
-      const user = await UserModel.findOne({ email: req.body.email });
-  
-      if (!user) {
-        return res.json({
-          code: 401,
-          message: "Nhập sai email đăng nhập",
-          data: null
-        });
-      }
-      if (user.isDelete === true) {
-        return res.json({
-          code: 401,
-          message: "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin!",
-          data: null
-        });
-      }
-      const result = await bcrypt.compare(req.body.password, user.password);
-  
-      if (result) {
+    if (!userExist) {
+      const hash = await bcrypt.hash(req.body.password, 8);
+      const User = new UserModel();
 
-        const { username, role, email, image, _id } = user;
-  
-        return res.json({
-          code: 200,
-          message: "Đăng nhập thành công",
-          data: { username, role, email, image, _id },
-        });
-      } else {
-        return res.json({
-          code: 400,
-          message: "Nhập sai password",
-          data: null
-        });
-      }
-    } catch (err) {
-      return res.json({ code: 400, message: err.message, data: null });
+      User.username = req.body.userName;
+      User.password = hash;
+      // User.image = file.name;
+      User.email = req.body.email;
+
+      const userCreate = await User.save();
+
+      return res.json({
+        code: 200,
+        message: "Bạn đã đăng ký thành công",
+        data: { userCreate }
+      });
+    } else {
+      return res.json({
+        code: 200,
+        message: "Người dùng đã tồn tại",
+        data: null
+      });
     }
-  });
-  // get user
+  } catch (err) {
+    return res.json({ code: 400, message: err.message, data: null });
+  }
+});
+
+router.post("/", async function(req, res, next) {
+  try {
+    const user = await UserModel.findOne({ email: req.body.email });
+
+    if (!user) {
+      return res.json({
+        code: 401,
+        message: "Nhập sai email đăng nhập",
+        data: null
+      });
+    }
+
+    if (user.isDelete === true) {
+      return res.json({
+        code: 401,
+        message: "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ admin!",
+        data: null
+      });
+    }
+
+    const result = await bcrypt.compare(req.body.password, user.password);
+
+    if (result) {
+      const token = jwt.sign({ _id: user._id }, key.tokenKey);
+
+      const { username, role, email, image, _id } = user;
+
+      return res.header("auth-token", token).json({
+        code: 200,
+        message: "Đăng nhập thành công",
+        data: { username, role, email, image, _id },
+        token
+      });
+    } else {
+      return res.json({
+        code: 400,
+        message: "Nhập sai password",
+        data: null
+      });
+    }
+  } catch (err) {
+    return res.json({ code: 400, message: err.message, data: null });
+  }
+});
+
+// get user
 router.get("/:token", async (req, res) => {
   const userToken = req.params.token;
 
@@ -234,6 +243,48 @@ router.put("/updatePassword/:id", async (req, res) => {
   }
 });
 
+// upload avatar
+router.put("/uploadAvatar/:id", async (req, res) => {
+  const userExist = await UserModel.findOne({ _id: req.params.id });
+
+  if (userExist) {
+    const file = req.files.file;
+
+    if (file) {
+      try {
+        await file.mv(`${__dirname}/../../client/public/uploads/users/${file.name}`);
+
+        const user = {
+          image: file.name
+        };
+
+        const updateUserAvatar = await UserModel.findOneAndUpdate(
+          { _id: req.params.id },
+          user,
+          {
+            new: true,
+            useFindAndModify: false
+          }
+        );
+
+        if (updateUserAvatar) {
+          res.json({
+            data: updateUserAvatar,
+            code: 200,
+            message: "Thay đổi avatar thành công"
+          });
+        }
+      } catch (error) {
+        console.log(error)
+        res.json({
+          code: 500,
+          message: "Thay đổi avatar thất bại"
+        });
+      }
+    }
+  }
+});
+
 router.post("/checkToken", (req, res) => {
   const token = req.body.token;
   const role = req.body.role;
@@ -261,4 +312,4 @@ router.post("/checkToken", (req, res) => {
   });
 });
 
-  module.exports = router;
+module.exports = router;
