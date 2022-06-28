@@ -6,6 +6,9 @@ import ReactTable from "react-table-v6";
 import 'react-table-v6/react-table.css'
 import { setMessage } from "../../../../actions/message.action";
 import { useDispatch } from "react-redux";
+import Confirm from "../Confirm";
+import Message from "../../Message";
+import { closeMessage } from "../../closeMessage";
 
 export default function Category() {
   let [deleteDisplay, setDeleteDisplay] = useState(false);
@@ -24,6 +27,36 @@ export default function Category() {
       setCategories(data);
       setAmountCategory(data.length);
     };
+
+    const fetchTrash = async () => {
+      const res = await axios.get("/cateNews/trash");
+      const data = res.data.data;
+
+      setAmountTrash(data.length);
+    };
+
+    fetchCategories();
+    fetchTrash();
+  }, [dispatch]);
+
+  const cancelConfirm = () => {
+    setDeleteDisplay(false)
+  }
+
+
+  // move to trash
+  const hanldeTrash = async id => {
+    const res = await axios.put(`/cateNews/trash/${id}`);
+    const { code, message, data } = res.data;
+    const categories = await data.filter(v => v.isDelete === false);
+    const amountTrash = await data.filter(v => v.isDelete === true);
+
+    setAmountTrash(amountTrash.length);
+    dispatch(setMessage({ code, message }));
+    dispatch(closeMessage());
+
+    setCategories(categories);
+  };
 
   const columns = [
     {
@@ -125,4 +158,3 @@ export default function Category() {
     </div>
   );
 }
-

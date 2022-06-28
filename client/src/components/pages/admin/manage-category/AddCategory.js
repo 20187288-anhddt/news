@@ -2,7 +2,8 @@ import React from "react";
 import axios from "axios";
 import {useForm} from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
-
+import { setMessage } from "../../../../actions/message.action";
+import Message from "../../Message";
 
 export default function AddCategory() {
   const { register, handleSubmit, errors } = useForm();
