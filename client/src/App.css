@@ -570,3 +570,121 @@ img {
     margin-top: 1rem !important;
   }
 }
+.selected-news {
+  height: 5.1rem;
+}
+
+.fanpage {
+  display: none;
+}
+
+@media only screen and (max-width: 576px) {
+.selected-news {
+  height: 15rem;
+}
+
+.other-new__image {
+  flex: 26% 1;
+  height: 4.1rem;
+}
+
+.other-new:first-of-type .other-new__image {
+  max-height: 12rem;
+  overflow: hidden;
+}
+
+.featured-new__image {
+  flex: 26% 1;
+  height: 4.1rem;
+}
+
+.latest-new__image {
+  flex: 26% 1;
+  height: 4.1rem;
+}
+}
+[class*=box-] {
+height: 6px;
+width: 400px;
+background: #f6f7f9;
+margin-bottom: 13px;
+margin-right: 5px;
+}
+
+.box-loading {
+background: #fff;
+height: auto;
+width: 100%;
+padding: 10px;
+display: block;
+margin: 0 auto;
+box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+-o-box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+-moz-box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+-webkit-box-shadow: 0 0 0 rgba(0, 0, 0, 0.1);
+border-radius: 3px;
+-o-border-radius: 3px;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+}
+.box-thumbnail {
+height: 40px;
+width: 40px;
+float: left;
+margin-right: 20px;
+display: inline-block;
+}
+
+.box-line-sm {
+width: calc(100% - 100px);
+margin-top: 10px;
+margin-left: 50px;
+}
+.box-line-xs {
+width: calc(100% - 150px);
+margin-left: 50px;
+}
+.box-line-df {
+margin-top: 30px;
+width: calc(100% - 50px);
+}
+.box-line-lg {
+width: calc(100% - 70px);
+}
+.box-line-lgx {
+width: 100%;
+}
+
+[class*=box-line],
+.box-thumbnail {
+animation: timeline;
+animation-duration: 1s;
+animation-timing-function: linear;
+animation-iteration-count: infinite;
+background: linear-gradient(to right, #eeeeee 8%, #dddddd 18%, #eeeeee 33%);
+background-size: 800px auto;
+background-position: 100px 0;
+}
+
+@keyframes timeline {
+0% {
+  background-position: -350px 0;
+}
+100% {
+  background-position: 400px 0;
+}
+}
+.comment__user {
+display: flex;
+flex-flow: row nowrap;
+align-items: center;
+justify-content: flex-start;
+}
+.comment__photo {
+width: 30px;
+height: 30px;
+overflow: hidden;
+}
+.comment__photo > img {
+width: 100%;
+}

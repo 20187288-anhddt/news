@@ -12,6 +12,16 @@ import ScrollToTop from "./ScrollToTop";
 
 import "./App.css";
 
+// component lazy load
+const Home = React.lazy(() => import("./components/pages/home/Index"));
+const Login = React.lazy(() => import("./components/pages/account/Login"));
+const Profile = React.lazy(() => import("./components/pages/account/Profile"));
+const Register = React.lazy(() =>
+	import("./components/pages/account/Register")
+);
+const Contact = React.lazy(() => import("./components/pages/Contact"));
+const NotFound = React.lazy(() => import("./components/pages/404NotFound"));
+
 // admin
 const Admin = React.lazy(() => import("./components/pages/admin"));
 
