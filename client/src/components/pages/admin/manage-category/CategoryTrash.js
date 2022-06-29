@@ -40,6 +40,15 @@ export default function CategoryTrash() {
     setDeleteDisplay(false)
   }
 
+  // restore category
+  const hanldeRestore = async id => {
+    const res = await axios.put(`/cateNews/restore/${id}`);
+
+    const { code, message, data } = res.data;
+    dispatch(setMessage({ code, message }));
+
+    setCategories(data);
+  };
 
   const columns = [
     {
