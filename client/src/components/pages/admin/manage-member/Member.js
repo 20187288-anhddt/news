@@ -144,5 +144,81 @@ export default function Member() {
         );
       }
     },
+    {
+      Header: "ACTION",
+      filterable: false,
+      sortable: false,
+      maxWidth: 200,
+      Cell: props => {
+        return (
+          <div>
+            <button
+              onClick={() =>
+                handleLockUser(props.original._id, props.original.isDelete)
+              }
+              type="button"
+              className={
+                props.original.isDelete
+                  ? "btn btn-success btn-sm mr-1"
+                  : "btn btn-warning btn-sm mr-1"
+              }
+              title={
+                props.original.isDelete ? "Mở khóa tài khoản" : "Khóa tài khoản"
+              }
+            >
+              {props.original.isDelete ? (
+                <i className="mdi mdi-account-check"></i>
+              ) : (
+                <i className="mdi mdi-account-off"></i>
+              )}
+            </button>
+            <button
+              type="button"
+              className="btn btn-danger btn-sm"
+              title="Xóa tài khoản"
+              onClick={handleDeleteUser}
+            >
+              <i className="mdi mdi-account-remove"></i>
+            </button>
+          </div>
+        );
+      }
+    }
   ];
+  return (
+    <div className="content-wrapper">
+      <div className="page-header">
+        <h3 className="page-title">
+          <span className="page-title-icon bg-gradient-danger text-white mr-2">
+            <i className="mdi mdi-account" />
+          </span>
+          Quản lý người dùng
+        </h3>
+      </div>
+      <div className="row">
+        <div className="col-xl-12 stretch-card" style={{ padding: "0px 30px" }}>
+          <div className="form-group w-100" >
+            <label>Lọc người dùng:</label>
+            <select onClick={hanldeFilterRole} className="form-control form-control-sm">
+              <option value="all">All</option>
+              <option value="admin">Admin</option>
+              <option value="customer">Customer</option>
+            </select>
+          </div>
+        </div>
+        <div className="col-xl-12">
+          <Message />
+        </div>
+        <div className="col-xl-12 grid-margin stretch-card" style={{ padding: "0px 30px" }}>
+          <ReactTable
+            columns={columns}
+            data={usersData}
+            filterable
+            defaultPageSize={10}
+            className="table mt-3 text-center"
+          />
+        </div>
+      </div>
+    </div>
+  );
 }
