@@ -1,7 +1,9 @@
 import React from "react";
 import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-
+import { addUser } from "../../actions/user.action";
+import NavAdmin from "./NavAdmin";
+import NavUser from "./NavUser";
 
 const style = {
   transform: "translate(0px, -1px) scale(1.1)"
@@ -28,5 +30,11 @@ export default function Navbar() {
     }
   }, [dispatch, token]);
 
-
+  return (
+    <React.Fragment>
+      {appState.users.data ? (
+        appState.users.data.role === "customer" ? (<NavUser style={style} />) : (<NavAdmin role={appState.users.data.role} style={style} />)
+      ) : (<NavUser style={style} />)}
+    </React.Fragment>
+  );
 }
